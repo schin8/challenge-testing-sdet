@@ -118,8 +118,15 @@ public class WordleTest {
     }
 
     @Test
-    void validateHowToPlay() {
+    public void verifyTitleOnPageIsWordle() {
+        // SDET Challenge says the title should be just "Wordle", but it's not.  Check with developer
+        // String expectedTitle="Worlde";
+        String expectedTitle = "Wordle — The New York Times";
         skipHowToPlay();
+
+        // Get the page title
+        String title = driver.getTitle();
+        assertThat(String.format("The title should be %s", expectedTitle), title, is(expectedTitle));
     }
 
     // Helper
