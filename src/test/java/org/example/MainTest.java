@@ -40,13 +40,6 @@ class MainTest {
         driver.close();
     }
 
-    @Disabled
-    @Test
-    public void sanityCheck(){
-        Main testTarget = new Main();
-        assertEquals(1, testTarget.sanity_check());
-    }
-
     @Test void seleniumSetupSanityCheck(){
         Main testTarget = new Main();
         assertEquals(1, testTarget.sanity_check());
