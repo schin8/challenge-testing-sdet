@@ -1,6 +1,7 @@
 name: Test Junit on Pull
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - main
