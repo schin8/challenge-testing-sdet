@@ -12,11 +12,12 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4.2.2
 
       - name: Setup JDK 17
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4.6.0
         with:
+          distribution: 'temurin'
           java-version: '17'
 
       # Use mvnw so consistent versions of maven is used
