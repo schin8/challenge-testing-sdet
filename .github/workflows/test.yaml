@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: Checkout code
@@ -19,9 +19,10 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'maven'
 
       # Use mvnw so consistent versions of maven is used
-      - name: Build with Gradle
+      - name: Build with maven
         run: ./mvnw install
 
       - name: Run JUnit tests
