@@ -19,6 +19,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'maven'
 
       # Use mvnw so consistent versions of maven is used
       - name: Build with Gradle
