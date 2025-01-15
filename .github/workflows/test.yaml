@@ -22,7 +22,7 @@ jobs:
           cache: 'maven'
 
       # Use mvnw so consistent versions of maven is used
-      - name: Build with Gradle
+      - name: Build with maven
         run: ./mvnw install
 
       - name: Run JUnit tests
