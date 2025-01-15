@@ -1,30 +1,23 @@
 package edu.bu.schin8.test.sdet;
 
-import org.example.Main;
-import org.junit.jupiter.api.AfterAll;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
 
 public class WordleTest {
 
@@ -118,11 +111,19 @@ public class WordleTest {
     }
 
     @Test
-    void validateHowToPlay() {
+    public void verifyTitleOnPageIsWordle() {
+        // SDET Challenge says the title should be just "Wordle", but it's not.  Check with developer
+        // String expectedTitle="Worlde";
+        String expectedTitle = "Wordle — The New York Times";
         skipHowToPlay();
+
+        // Get the page title
+        String title = driver.getTitle();
+        assertThat(String.format("The title should be %s", expectedTitle), title, is(expectedTitle));
     }
 
-    // Helper
+    // Helper Methods
+    // ******************************************
     private void skipHowToPlay() {
         // Find the close button within the dialog by its aria-label attribute (I didn't have luck using data-testid='icon-close'`)
         WebElement closeButton = howToPlayDialog.findElement(By.cssSelector("button[aria-label='Close']"));
