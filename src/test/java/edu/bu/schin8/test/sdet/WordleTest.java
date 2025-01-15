@@ -1,5 +1,6 @@
 package edu.bu.schin8.test.sdet;
 
+import org.apache.log4j.LogManager;
 import org.example.Main;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
@@ -7,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.junit.jupiter.api.TestInfo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -22,11 +24,14 @@ import static org.hamcrest.Matchers.*;
 
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class WordleTest {
+    private static final Logger LOG = LoggerFactory.getLogger(WordleTest.class);
 
     public static final String BASEURL = "https://www.nytimes.com/games/wordle/index.html";
     public static final String HOW_TO_PLAY = "How To Play";
@@ -45,7 +50,7 @@ public class WordleTest {
     private WebElement howToPlayDialog;
 
     @BeforeEach
-    public void testSetup() throws Exception {
+    public void testSetup(TestInfo testInfo) throws Exception {
         try {
             WebDriverManager.chromedriver().setup();
             ChromeOptions options = new ChromeOptions();
@@ -54,6 +59,8 @@ public class WordleTest {
             options.addArguments("--headless");
             options.addArguments("--incognito");
             driver = new ChromeDriver(options);
+
+            LOG.info(String.format("Starting %s",testInfo.getDisplayName()));
 
             driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
             driver.manage().window().maximize();
@@ -80,10 +87,11 @@ public class WordleTest {
     }
 
     @AfterEach
-    public void testCleanup() {
+    public void testCleanup(TestInfo testInfo) {
         if (driver != null) {
-//            driver.close();
+            driver.close();
         }
+        LOG.info(String.format("Completed %s",testInfo.getDisplayName()));
     }
 
     /***
@@ -127,6 +135,31 @@ public class WordleTest {
         // Get the page title
         String title = driver.getTitle();
         assertThat(String.format("The title should be %s", expectedTitle), title, is(expectedTitle));
+    }
+
+    @Test
+    public void verifyBoardExists(){
+        skipHowToPlay();
+        int expectedRows = 6;
+        int expectedCols = 5;
+
+        // It would be nice if there was an aria-label, but there isn't!  Use XPath to filter on the "constant part" of
+        // the element name.
+        WebElement boardElement = driver.findElement(By.xpath("//*[contains(@class, 'Board-module_board')]"));
+        assertThat("Board element should be present", boardElement, is(notNullValue()));
+
+        // Get all rows
+        List<WebElement> rows = boardElement.findElements(By.xpath(".//*[contains(@class, 'Row-module_row')]"));
+        assertThat(String.format("Number of Rows is %s",rows.size()), rows.size(), is(expectedRows));
+
+        // Loop through each row, and check that the columns found is expected
+        for (int i = 0; i < rows.size(); i++) {
+            WebElement row = rows.get(i);
+
+            // Get all columns within the current row
+            List<WebElement> columns = row.findElements(By.xpath(".//*[contains(@class, 'Tile-module_tile')]"));
+            assertThat(String.format("Number of Columns in row %d is %d", i + 1, columns.size()), columns.size(), is(expectedCols));
+        }
     }
 
     // Helper
