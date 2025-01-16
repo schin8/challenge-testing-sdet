@@ -1,34 +1,29 @@
 package edu.bu.schin8.test.sdet;
 
-import org.apache.log4j.LogManager;
-import org.example.Main;
-import org.junit.jupiter.api.AfterAll;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.TestInfo;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
-import java.time.Duration;
-import java.util.concurrent.TimeUnit;
-import java.util.List;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
-
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 public class WordleTest {
     private static final Logger LOG = LoggerFactory.getLogger(WordleTest.class);
@@ -130,6 +125,7 @@ public class WordleTest {
         // SDET Challenge says the title should be just "Wordle", but it's not.  Check with developer
         // String expectedTitle="Worlde";
         String expectedTitle = "Wordle — The New York Times";
+
         skipHowToPlay();
 
         // Get the page title
@@ -139,9 +135,10 @@ public class WordleTest {
 
     @Test
     public void verifyBoardExists(){
-        skipHowToPlay();
         int expectedRows = 6;
         int expectedCols = 5;
+
+        skipHowToPlay();
 
         // It would be nice if there was an aria-label, but there isn't!  Use XPath to filter on the "constant part" of
         // the element name.
@@ -162,10 +159,62 @@ public class WordleTest {
         }
     }
 
-    // Helper
+    /**
+     * When enter is hit with an invalid word, the current row's class changes.
+     * You can see this by using the browsers inspector and watching it change from
+     * class="Row-module_row__???" to class="Row-module_row__??? Row-module_invalid_????"
+     *
+     */
+    @Test
+    public void verifyInvalidWordGetsMessage(){
+        String invalidWord = "bugggg";
+        String expectedText = "Not in word list";
+
+        skipHowToPlay();
+
+        LOG.info("- Locate the element with aria-label 'Row 1'");
+        WebElement element = driver.findElement(By.xpath("//div[@aria-label='Row 1']"));
+        String initialClass = element.getAttribute("class");
+
+        LOG.info("- Enter invalid word");
+        enterWordWithScreenKeyboard(invalidWord);
+        pressEnterWithScreenKeyboard();
+
+        LOG.info(String.format("- Look for %s", expectedText));
+        // Wait for the class attribute to change,
+        // If you use the inspector, hitting enter would cause the <div class="ToastContainer-module_toastContainer__xxx to briefly flash
+        // digging deeper it's ToastContainer-module_gameToaster that contains the text
+        new WebDriverWait(driver, Duration.ofSeconds(1)).until(new ExpectedCondition<Boolean>() {
+            public Boolean apply(WebDriver d) {
+                String currentClass = element.getAttribute("class");
+                // Find the div by partial id using XPath
+                WebElement dynamicDiv = driver.findElement(By.xpath("//div[starts-with(@id, 'ToastContainer-module_gameToaster')]"));
+                assertThat("",dynamicDiv.getText(),is(expectedText));
+                return !currentClass.equals(initialClass);
+            }
+        });
+    }
+
+    // Helper Methods
+    // *****************
     private void skipHowToPlay() {
         // Find the close button within the dialog by its aria-label attribute (I didn't have luck using data-testid='icon-close'`)
         WebElement closeButton = howToPlayDialog.findElement(By.cssSelector("button[aria-label='Close']"));
         closeButton.click();
+    }
+
+    private void enterWordWithScreenKeyboard(String theWord){
+        for (int i = 0; i < theWord.length(); i++)
+        {
+            char ch = theWord.charAt(i);
+
+            WebElement button = driver.findElement(By.cssSelector(String.format("button[aria-label='add %s']", ch)));
+            button.click();
+        }
+    }
+
+    private void pressEnterWithScreenKeyboard(){
+        WebElement button = driver.findElement(By.cssSelector("button[aria-label='enter']"));
+        button.click();
     }
 }
