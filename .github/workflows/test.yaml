@@ -1,4 +1,4 @@
-name: Test Junit on Pull
+name: Test Wordle
 
 on:
   schedule:
