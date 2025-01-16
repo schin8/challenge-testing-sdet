@@ -22,7 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class WordleTest {
@@ -167,32 +169,49 @@ public class WordleTest {
      */
     @Test
     public void verifyInvalidWordGetsMessage(){
-        String invalidWord = "bugggg";
+        String invalidWord = "buggg";
         String expectedText = "Not in word list";
 
         skipHowToPlay();
 
         LOG.info("- Locate the element with aria-label 'Row 1'");
         WebElement element = driver.findElement(By.xpath("//div[@aria-label='Row 1']"));
-        String initialClass = element.getAttribute("class");
+        String beforeEnter = element.getAttribute("class");
 
         LOG.info("- Enter invalid word");
         enterWordWithScreenKeyboard(invalidWord);
         pressEnterWithScreenKeyboard();
 
-        LOG.info(String.format("- Look for %s", expectedText));
-        // Wait for the class attribute to change,
         // If you use the inspector, hitting enter would cause the <div class="ToastContainer-module_toastContainer__xxx to briefly flash
         // digging deeper it's ToastContainer-module_gameToaster that contains the text
-        new WebDriverWait(driver, Duration.ofSeconds(1)).until(new ExpectedCondition<Boolean>() {
-            public Boolean apply(WebDriver d) {
-                String currentClass = element.getAttribute("class");
-                // Find the div by partial id using XPath
-                WebElement dynamicDiv = driver.findElement(By.xpath("//div[starts-with(@id, 'ToastContainer-module_gameToaster')]"));
-                assertThat("",dynamicDiv.getText(),is(expectedText));
-                return !currentClass.equals(initialClass);
-            }
-        });
+        LOG.info("Check for class change because of word not in list");
+        String afterEnter = element.getAttribute("class");
+        assertThat("Class should have changed",afterEnter, is(not(beforeEnter)));
+
+        LOG.info(String.format("- Look for %s", expectedText));
+        WebElement dynamicDiv = driver.findElement(By.xpath("//div[starts-with(@id, 'ToastContainer-module_gameToaster')]"));
+        assertThat(String.format("`%s` detected", expectedText),dynamicDiv.getText(),is(expectedText));
+    }
+
+    @Test
+    public void verifyValidWordGetsMessage(){
+        String validWord = "happy";
+
+        skipHowToPlay();
+
+        LOG.info("- Locate the element with aria-label 'Row 1'");
+        WebElement element = driver.findElement(By.xpath("//div[@aria-label='Row 1']"));
+        String beforeEnter = element.getAttribute("class");
+
+        LOG.info("- Enter valid word");
+        enterWordWithScreenKeyboard(validWord);
+        pressEnterWithScreenKeyboard();
+
+        String afterEnter = element.getAttribute("class");
+        assertThat("Class should NOT have changed",afterEnter, is(beforeEnter));
+
+        WebElement dynamicDiv = driver.findElement(By.xpath("//div[starts-with(@id, 'ToastContainer-module_gameToaster')]"));
+        assertThat("Not expecting a message",dynamicDiv.getText(),is(emptyString()));
     }
 
     // Helper Methods
