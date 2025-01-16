@@ -25,8 +25,8 @@ jobs:
 
       # Use mvnw so consistent versions of maven is used
       - name: Build with maven
-        run: ./mvnw install -DskipTests
+        run: ./mvnw -B install -DskipTests
 
       - name: Run JUnit tests
-        run: ./mvnw test
+        run: ./mvnw -B test
 
