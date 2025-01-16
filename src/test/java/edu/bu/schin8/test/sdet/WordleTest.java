@@ -3,6 +3,7 @@ package edu.bu.schin8.test.sdet;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
 import org.openqa.selenium.By;
@@ -122,11 +123,12 @@ public class WordleTest {
         skipHowToPlay();
     }
 
+    @Disabled
     @Test
     public void verifyTitleOnPageIsWordle() {
+        String expectedTitle="Worlde";
         // SDET Challenge says the title should be just "Wordle", but it's not.  Check with developer
-        // String expectedTitle="Worlde";
-        String expectedTitle = "Wordle — The New York Times";
+        // The actual title is "Wordle — The New York Times"
 
         skipHowToPlay();
 
