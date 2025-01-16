@@ -11,7 +11,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
@@ -29,8 +28,6 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class WordleTest {
-    private static final Logger LOG = LoggerFactory.getLogger(WordleTest.class);
-
     public static final String BASEURL = "https://www.nytimes.com/games/wordle/index.html";
     public static final String HOW_TO_PLAY = "How To Play";
     public static final String GUESS_IN_6_TRIES = "Guess the Wordle in 6 tries.";
@@ -43,7 +40,7 @@ public class WordleTest {
     public static final String STATS_MSG = "Log in or create a free NYT account to link your stats.";
     public static final String SIGNUP_1 = "A new puzzle is released daily at midnight. If you haven’t already, you can sign up";
     public static final String SIGNUP_2 = "for our daily reminder email.";
-
+    private static final Logger LOG = LoggerFactory.getLogger(WordleTest.class);
     private WebDriver driver;
     private WebElement howToPlayDialog;
 
@@ -58,7 +55,7 @@ public class WordleTest {
             options.addArguments("--incognito");
             driver = new ChromeDriver(options);
 
-            LOG.info(String.format("Starting %s",testInfo.getDisplayName()));
+            LOG.info(String.format("Starting %s", testInfo.getDisplayName()));
 
             driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
             driver.manage().window().maximize();
@@ -89,7 +86,7 @@ public class WordleTest {
         if (driver != null) {
             driver.close();
         }
-        LOG.info(String.format("Completed %s",testInfo.getDisplayName()));
+        LOG.info(String.format("Completed %s", testInfo.getDisplayName()));
     }
 
     /***
@@ -126,7 +123,7 @@ public class WordleTest {
     @Disabled
     @Test
     public void verifyTitleOnPageIsWordle() {
-        String expectedTitle="Worlde";
+        String expectedTitle = "Worlde";
         // SDET Challenge says the title should be just "Wordle", but it's not.  Check with developer
         // The actual title is "Wordle — The New York Times"
 
@@ -138,7 +135,7 @@ public class WordleTest {
     }
 
     @Test
-    public void verifyBoardExists(){
+    public void verifyBoardExists() {
         int expectedRows = 6;
         int expectedCols = 5;
 
@@ -155,7 +152,7 @@ public class WordleTest {
 
         // Get all rows
         List<WebElement> rows = boardElement.findElements(By.xpath(".//*[contains(@class, 'Row-module_row')]"));
-        assertThat(String.format("Number of Rows is %s",rows.size()), rows.size(), is(expectedRows));
+        assertThat(String.format("Number of Rows is %s", rows.size()), rows.size(), is(expectedRows));
 
         // Loop through each row, and check that the columns found is expected
         for (int i = 0; i < rows.size(); i++) {
@@ -171,10 +168,9 @@ public class WordleTest {
      * When enter is hit with an invalid word, the current row's class changes.
      * You can see this by using the browsers inspector and watching it change from
      * class="Row-module_row__???" to class="Row-module_row__??? Row-module_invalid_????"
-     *
      */
     @Test
-    public void verifyInvalidWordGetsMessage(){
+    public void verifyInvalidWordGetsMessage() {
         String invalidWord = "buggg";
         String expectedText = "Not in word list";
 
@@ -192,15 +188,15 @@ public class WordleTest {
         // digging deeper it's ToastContainer-module_gameToaster that contains the text
         LOG.info("Check for class change because of word not in list");
         String afterEnter = element.getAttribute("class");
-        assertThat("Class should have changed",afterEnter, is(not(beforeEnter)));
+        assertThat("Class should have changed", afterEnter, is(not(beforeEnter)));
 
         LOG.info(String.format("- Look for %s", expectedText));
         WebElement dynamicDiv = driver.findElement(By.xpath("//div[starts-with(@id, 'ToastContainer-module_gameToaster')]"));
-        assertThat(String.format("`%s` detected", expectedText),dynamicDiv.getText(),is(expectedText));
+        assertThat(String.format("`%s` detected", expectedText), dynamicDiv.getText(), is(expectedText));
     }
 
     @Test
-    public void verifyValidWordGetsMessage(){
+    public void verifyValidWordGetsMessage() {
         String validWord = "happy";
 
         skipHowToPlay();
@@ -214,10 +210,10 @@ public class WordleTest {
         pressEnterWithScreenKeyboard();
 
         String afterEnter = element.getAttribute("class");
-        assertThat("Class should NOT have changed",afterEnter, is(beforeEnter));
+        assertThat("Class should NOT have changed", afterEnter, is(beforeEnter));
 
         WebElement dynamicDiv = driver.findElement(By.xpath("//div[starts-with(@id, 'ToastContainer-module_gameToaster')]"));
-        assertThat("Not expecting a message",dynamicDiv.getText(),is(emptyString()));
+        assertThat("Not expecting a message", dynamicDiv.getText(), is(emptyString()));
     }
 
     // Helper Methods
@@ -228,9 +224,8 @@ public class WordleTest {
         closeButton.click();
     }
 
-    private void enterWordWithScreenKeyboard(String theWord){
-        for (int i = 0; i < theWord.length(); i++)
-        {
+    private void enterWordWithScreenKeyboard(String theWord) {
+        for (int i = 0; i < theWord.length(); i++) {
             char ch = theWord.charAt(i);
 
             WebElement button = driver.findElement(By.cssSelector(String.format("button[aria-label='add %s']", ch)));
@@ -238,7 +233,7 @@ public class WordleTest {
         }
     }
 
-    private void pressEnterWithScreenKeyboard(){
+    private void pressEnterWithScreenKeyboard() {
         WebElement button = driver.findElement(By.cssSelector("button[aria-label='enter']"));
         button.click();
     }

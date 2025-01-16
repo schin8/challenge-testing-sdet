@@ -1,19 +1,16 @@
 package org.example;
 
-import org.junit.jupiter.api.AfterAll;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import io.github.bonigarcia.wdm.WebDriverManager;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MainTest {
     public WebDriver driver;
@@ -40,7 +37,8 @@ class MainTest {
         driver.close();
     }
 
-    @Test void seleniumSetupSanityCheck(){
+    @Test
+    void seleniumSetupSanityCheck() {
         Main testTarget = new Main();
         assertEquals(1, testTarget.sanity_check());
     }
