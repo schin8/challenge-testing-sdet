@@ -144,9 +144,13 @@ public class WordleTest {
 
         skipHowToPlay();
 
+        // Define a WebDriverWait
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
         // It would be nice if there was an aria-label, but there isn't!  Use XPath to filter on the "constant part" of
         // the element name.
-        WebElement boardElement = driver.findElement(By.xpath("//*[contains(@class, 'Board-module_board')]"));
+
+        WebElement boardElement = wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[contains(@class, 'Board-module_board')]")));
         assertThat("Board element should be present", boardElement, is(notNullValue()));
 
         // Get all rows
