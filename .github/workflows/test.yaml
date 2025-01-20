@@ -2,7 +2,7 @@ name: Test Wordle
 
 on:
   schedule:
-    - cron: '0 22 * * *'
+    - cron: '0 24 * * *'
   workflow_dispatch:
   pull_request:
     branches:
