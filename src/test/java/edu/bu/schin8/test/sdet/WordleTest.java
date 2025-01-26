@@ -74,8 +74,10 @@ public class WordleTest {
             WebElement playButton = driver.findElement(By.cssSelector("[data-testid='Play']"));
             playButton.click();
 
-            howToPlayDialog = driver.findElement(By.id("help-dialog"));
-
+            // What can I use to see if the contents are there?
+            //howToPlayDialog = driver.findElement(By.id("help-dialog"));
+            howToPlayDialog = wait.until(ExpectedConditions.presenceOfElementLocated(By.id("help-dialog")));
+            //howToPlayDialog = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#help-dialog")));
         } catch (Exception e) {
             throw new Exception("testSetup problem detected");
         }
@@ -96,6 +98,14 @@ public class WordleTest {
     void readHowToPlay() {
         // WebElement howToPlayHeading = howToPlayDialig.findElement(By.tagName("h2"));
         // assertEquals(HOW_TO_PLAY, howToPlayHeading.getText());
+
+        // Still need to wait for now, need to figure out what indicates that I have information so I can use
+        // howToPlayDialog = wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#help-dialog .something?")));
+        try {
+            Thread.sleep(250);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
 
         // Instead of pulling out each element, just extract the Entire dialog text.
         String dialogText = howToPlayDialog.getText();
