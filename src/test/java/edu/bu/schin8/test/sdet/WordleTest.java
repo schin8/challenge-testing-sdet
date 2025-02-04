@@ -74,7 +74,8 @@ public class WordleTest {
             WebElement playButton = driver.findElement(By.cssSelector("[data-testid='Play']"));
             playButton.click();
 
-            howToPlayDialog = driver.findElement(By.id("help-dialog"));
+           //howToPlayDialog = driver.findElement(By.id("help-dialog"));
+            howToPlayDialog = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("help-dialog")));
 
         } catch (Exception e) {
             throw new Exception("testSetup problem detected");
