@@ -12,16 +12,16 @@
 
 ### Setup
 
-- Get access to the repository https://github.com/boston-homelab/testing-sdet-challenge
+- Get access to the repository https://github.com/schin8/challenge-testing-sdet.git
   -  If the repository is private, contact me at c.steve98@gmail.com
 
 - Clone the repository
 
 ```
 # using https
-git clone https://github.com/boston-homelab/testing-sdet-challenge.git
+git clone https://github.com/schin8/challenge-testing-sdet.git
 # using ssh
-git clone git@github.com:boston-homelab/testing-sdet-challenge.git
+git clone git@github.com:schin8/challenge-testing-sdet.git
 ```
 
 ###  Local Testing
